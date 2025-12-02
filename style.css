@@ -1,0 +1,211 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(hsl(270, 7%, 12%), hsl(270, 7%, 5%));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Montserrat', 'Arial';
+}
+
+::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: hsla(246, 100%, 79%, 30%);
+}
+
+::-webkit-scrollbar-track {
+    background-color: hsla(273, 100%, 15%, 0.589);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: hsla(0, 0%, 100%, 50%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: hsla(0, 0%, 100%, 80%);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+h1 {
+    margin: 10px;
+    background-image: linear-gradient(hsla(0, 0%, 100%, 100%), hsla(0, 0%, 100%, 50%));
+    background-clip: text;
+    color: transparent;
+    font-size: 4rem;
+    text-align: center;
+}
+
+h2 {
+    background-image: linear-gradient(hsla(0, 0%, 100%, 100%), hsla(0, 0%, 100%, 50%));
+    background-clip: text;
+    color: transparent;
+    font-size: 3rem;
+    text-align: center;
+}
+
+h3 {
+    margin-left: 20px;
+    margin-top: 7px;
+    color: aliceblue;
+    font-size: 1.5rem;
+    text-decoration: underline 2px;
+}
+
+p {
+    margin-left: 20px;
+    margin-top: 7px;
+    text-align: center;
+    color: aliceblue;
+    font-size: 1rem;
+}
+
+section {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+button {
+    margin: 15px;
+    margin-left: 0px;
+    background-color: transparent;
+    height: min(3rem, 20vh);
+    width: 8rem;
+    border-width: 2px;
+    border-style: dashed;
+    color: aliceblue;
+    font-size: min(1rem, 10vh);
+    font-family: 'Montserrat', 'Arial';
+    transition: all 0.3s ease;
+}
+
+img {
+    margin: 20px;
+    border-width: 2px;
+    border-color: hsl(257, 25%, 42%);
+    border-style: dashed;
+    max-width: 90%;
+}
+
+button:hover {
+    width: 8.5rem;
+}
+
+nav {
+    background: linear-gradient(hsla(279, 32%, 9%, 0.9), hsla(279, 32%, 9%, 0.9));
+    position: sticky;
+    top: 0;
+    right: 0;
+    text-align: right;
+}
+
+a {
+    text-decoration-color: aliceblue;
+}
+
+.thumbnail {
+    width: 20vw;
+    height: 20vw;
+}
+
+.code {
+    text-align: left;
+    display: inline-block;
+    padding: 7px;
+    font-family: 'Source Code Pro', 'Courier New';
+    background-color: hsla(0, 0%, 0%, 10%);
+    border-color: hsla(0, 0%, 0%, 20%);
+    border-radius: 0px;
+    border-width: 3px;
+    border-style: dashed;
+    white-space: pre;
+    max-width: 48vw;
+    min-width: 40vw;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+.explaination {
+    margin-right: 20px;
+    text-align: center;
+    font-style: italic;
+    flex: 1;
+}
+
+.page {
+    scroll-margin-top: 86px;
+    border-width: 2px;
+    border-style: dashed; 
+}
+
+#home {
+    scroll-margin-top: 86px;
+}
+
+#home_button {
+    border-color: hsl(0, 0%, 42%);
+    background-color: hsla(0, 0%, 100%, 0.05);
+}
+
+#lua {
+    border-color: hsl(257, 25%, 42%);
+    background-color: hsla(257, 25%, 42%, 5%);
+}
+
+#lua_button {
+    border-color: hsl(257, 25%, 42%);
+    background-color: hsla(257, 25%, 42%, 5%);
+}
+
+#lua_text {
+    background-image: linear-gradient(hsla(257, 25%, 42%, 100%), hsla(0, 0%, 100%, 100%));
+}
+
+#cpp {
+    border-color: hsl(207, 25%, 42%);
+    background-color: hsla(207, 25%, 42%, 5%);
+}
+
+#cpp_button {
+    border-color: hsl(207, 25%, 42%);;
+    background-color: hsla(207, 25%, 42%, 5%);
+}
+
+#cpp_text {
+    background-image: linear-gradient(hsla(207, 25%, 42%, 100%), hsla(0, 0%, 100%, 100%));
+}
+
+#js {
+    border-color: hsl(40, 25%, 42%);
+    background-color: hsla(40, 25%, 42%, 5%);
+}
+
+#js_button {
+    border-color: hsl(40, 25%, 42%);
+    background-color: hsla(40, 25%, 42%, 5%);
+}
+
+#js_text {
+    background-image: linear-gradient(hsla(40, 25%, 42%, 100%), hsla(0, 0%, 100%, 100%));
+}
+
+#misc {
+    border-color: hsl(0, 25%, 42%);
+    background-color: hsla(0, 25%, 42%, 0.05);
+}
+
+#misc_button {
+    border-color: hsl(0, 25%, 42%);
+    background-color: hsla(0, 25%, 42%, 0.05);
+}
+
+#misc_text {
+    background-image: linear-gradient(rgb(134, 80, 80), hsla(0, 0%, 100%, 100%));
+}

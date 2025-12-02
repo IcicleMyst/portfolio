@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <title>portfolio</title>
+</head>
+<body>
+    <nav>
+        <a href="#home"><button id="home_button">home</button></a>
+        <a href="#lua"><button id="lua_button">lua</button></a>
+        <a href="#cpp"><button id="cpp_button">c++</button></a>
+        <a href="#js"><button id="js_button">javascript</button></a>
+        <a href="#misc"><button id="misc_button">miscellaneous</button></a>
+    </nav>
+    <main>
+    <h1 id="home">PORTFOLIO</h1>
+    <p>hello! my name is Icicle, a 17 year old who's ambitious in the world of computer science!</p>
+    <p>this is a place where I showcase many of my projects that I've worked on throughout my scripting career</p>
+	<p>there are currently 4 sections to this portfolio, I may add more in the future! thank you!</p>
+	<p>this portfolio was made through HTML, CSS, and JS</p>
+
+    <br>
+
+    <p class="explaination"><u>NOTES:</u> these are only some of my coding projects; others might not be included</p>
+    <p class="explaination">all the code shared here are made by me and are open source, feel free to use them!!</p>
+    <p class="explaination">(although my code may or may not be the best way to do things)</p>
+
+    <br>
+	<br>
+	<br>
+	<br>
+	<br>
+
+    <div class="page" id="lua">
+        <h2 id="lua_text">lua - roblox studio</h2>
+        <p>one of my favorite languages, I like how it's easy it is to learn as a high level programming language along with its powerful aspects</p>
+        <br>
+
+        <h3>simulating sorting methods with objects:</h3>
+        <section>
+            <p class="code">-- module script
+local module = {}
+
+local SORT_DELAY = 0
+
+-- converts a folder into an array from scratch - index is based on position
+local function FolderToArray(partsFolder : Folder)
+	local parts = partsFolder:GetChildren()
+	
+	table.sort(parts, function(a, b)
+		return a.Position.Z < b.Position.Z
+	end)
+
+	return parts
+end
+
+local function SetPosition(parts : {})	
+	for i, part in parts do
+		part.Position = Vector3.new(0, part.Size.Y / 2, (i - 1) * part.Size.Z)
+	end
+end
+
+function module.GenerateParts(parts : Folder, count : number)
+	local PART_SIZE = 4    -- size of the square part
+	local HUE_OFFSET = 0.6 -- where the hue starts from (0 to 1)
+	local HUE_RANGE = 0.1  -- whats the range of that hue (0 to 1)
+
+	-- creates parts
+	for i = 1, count do
+		local part = script.Part:Clone()
+
+		part.Name = i
+		part.Anchored = true
+		part.Color = Color3.fromHSV(i / (count / HUE_RANGE) + HUE_OFFSET, 0.5, 1)                                     -- part.Color = Color3.fromHSV(0, 0, 0.5 - (i / (count / HUE_RANGE) + HUE_OFFSET))
+		part.Size = Vector3.new(PART_SIZE, i * PART_SIZE, PART_SIZE)
+		part.Position = Vector3.new(0, part.Size.Y / 2, (i - 1) * part.Size.Z)
+		part.Parent = parts
+	end
+	
+	module.MixParts(workspace.Parts)
+end
+
+function module.MixParts(partsFolder : Folder)
+	local parts = FolderToArray(partsFolder)
+	
+	local mixedParts = {}     -- temporarily stores the completed array
+	local availableSpots = {} -- stores the index of each part
+	
+	-- inserts spots according to number of parts
+	for i in parts do
+		table.insert(availableSpots, i)
+	end
+
+	-- positions parts into random spots
+	for i, part in parts do
+		local randomSpotsIndex = math.random(1, #availableSpots)
+		local randomPartsIndex = availableSpots[randomSpotsIndex] -- (value that holds the index of the "parts" array)
+		
+		-- for each iteration, a random index will have the value of this part
+		mixedParts[randomPartsIndex] = part -- create a temporary array so it doesnt conflict with the new data in the "parts" array
+		
+		table.remove(availableSpots, randomSpotsIndex)
+	end
+	parts = mixedParts
+
+	SetPosition(parts)
+end
+
+function module.Bogosort(partsFolder : Folder)
+	local comparisons = 0
+	local sorted = false
+	
+	local function Sorted()
+		local parts = FolderToArray(partsFolder) -- since we mixed the parts, we need to get the array again
+		for i = 1, #parts do
+			if not parts[i + 1] then continue end -- ignores nonexistent index
+			if parts[i].Size.Y > parts[i + 1].Size.Y then
+				return false
+			end
+		end
+		return true
+	end
+	
+	while not Sorted() do
+		module.MixParts(partsFolder)
+		comparisons += 1
+
+		task.wait(SORT_DELAY)
+	end
+	
+	print(`{comparisons} comparisons`)
+end
+
+local function HighlightTarget(part : Part)
+	script.HighlightTarget.Adornee = part
+end
+
+local function HighlightPart(part : Part)
+	script.HighlightPart.Adornee = part
+end
+
+local function Unhighlight()
+	script.HighlightPart.Adornee = nil
+	script.HighlightTarget.Adornee = nil
+end
+
+function module.SelectionSort(partsFolder : Folder)
+	local parts = FolderToArray(partsFolder)
+	local minIndex
+	local comparisons = 0
+	
+	for i, part in parts do
+		minIndex = i
+		
+		for j = i + 1, #parts do
+			if tonumber(parts[j].Size.Y) < tonumber(parts[minIndex].Size.Y) then
+				minIndex = j
+			end
+			
+			HighlightTarget(parts[minIndex])
+			HighlightPart(parts[j])
+			comparisons += 1
+			task.wait(SORT_DELAY)
+		end
+		
+		parts[i] = parts[minIndex]
+		parts[minIndex] = part
+		SetPosition(parts)
+	end
+	
+	Unhighlight()
+	print(`{comparisons} comparisons`)
+end
+
+function module.BubbleSort(partsFolder : Folder)
+	local parts = FolderToArray(partsFolder)
+	local swapped
+	local comparisons = 0
+
+	for i = 1, #parts do
+		swapped = false
+		for j = 1, #parts - i do
+			if not parts[j + 1] then continue end -- ignores nonexistent index
+			if parts[j].Size.Y > parts[j + 1].Size.Y then
+				local temporaryPart = parts[j]
+				parts[j] = parts[j + 1]
+				parts[j + 1] = temporaryPart
+				SetPosition(parts)
+				
+				swapped = true
+			end
+			
+			HighlightTarget(parts[j + 1])
+			HighlightPart(parts[j])
+			comparisons += 1
+			task.wait(SORT_DELAY)
+		end
+		
+		if not swapped then break end
+	end
+	
+	Unhighlight()
+	print(`{comparisons} comparisons`)
+end
+return module</p>
+            <div class="explaination">
+            <p>although lua has its own built-in sorting method, this program simulates the sorting method of languages without a built-in method.</p>
+            <br>
+            <br>
+            <p>- an array of objects being created randomly generated and positioned through the "module.GenerateParts(folder, number)" command</p>
+            <p>- the parts are mixed using "module.MixParts(folder)"</p>
+            <br>
+            <br>
+			<br>
+            <p>there are currently 3 sorting methods:</p>
+            <br>
+            <p>- "module.Bogosort(folder)" sorts the array completely <u>randomly</u>. this is the worst sorting method!!!
+			<img src="images/lua_1.7.png"></img>
+            <p>best case: 0 comparisons; worst case: infinite comparisons</p>
+			<img src="images/lua_1.8.png"></img>
+            <br>
+			<br>
+            <p>- "module.SelectionSort(folder)" loops through the entire array and relocates the smallest object to the front. this method repeats until the array is sorted</p>
+			<p>(white = current part, red = current minimum part)</P>
+			<img src="images/lua_1.3.png"></img>
+            <p>best case: O(n^2) comparisons; worst case: O(n^2) comparisons</p>
+			<img src="images/lua_1.4.png"></img>
+            <br>
+			<br>
+            <p>- "module.BubbleSort(folder)" checks if the object in front of it has a higher value, if so, then swap positions. this method is faster than selection sort</p>
+			<p>(white = current part, red = part that is being compared)</p>
+			<img src="images/lua_1.5.png"></img>
+            <p>best case: O(n) comparisons; worst case: O(n^2) comparisons</p>
+			<img src="images/lua_1.6.png"></img>
+            <br>
+			<br>
+			<p>here is the completed sort:</p>
+			<img src="images/lua_1.9.png"></img>
+            <br>
+            <br>
+			<br>
+            <p>note: set this up by including a folder in workspace and these objects inside the module</p>
+            <img src="images/lua_1.1.png"></img>
+            <img src="images/lua_1.2.png"></img>
+        </div>
+        </section>
+
+		    <h3>2d force simulation:</h3>
+        <section>
+            <p class="code">--local script
+local UserInputService = game:GetService("UserInputService")
+local fire = game:GetService("ReplicatedStorage"):WaitForChild("Fire")
+
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		local xVelocity = game:GetService("Workspace").CurrentCamera.ViewportSize.X / 2 - UserInputService:GetMouseLocation().X
+		local yVelocity = game:GetService("Workspace").CurrentCamera.ViewportSize.Y / 2 - UserInputService:GetMouseLocation().Y
+		fire:FireServer(-xVelocity, yVelocity)
+	end
+end)
+
+--server script
+local MAX_FORCE = 1000
+local FORCE = 150
+local DURATION = 0.3
+
+local function ApplyVelocity(part : Part, duration : number, xVelocity : number, yVelocity : number)
+	local velocityAttachment = Instance.new("Attachment")
+	local linearVelocity = Instance.new("LinearVelocity")
+
+	local totalDistance = math.abs(xVelocity) + math.abs(yVelocity)
+	local scale = FORCE / totalDistance
+	xVelocity *= scale
+	yVelocity *= scale
+	
+	velocityAttachment.Parent = part
+	linearVelocity.MaxForce = MAX_FORCE
+	linearVelocity.Attachment0 = velocityAttachment
+	print(xVelocity, yVelocity)
+	linearVelocity.Parent = velocityAttachment
+	linearVelocity.VectorVelocity = Vector3.new(-xVelocity, yVelocity, 0)
+
+	task.wait(duration)
+
+	velocityAttachment:Destroy()
+end
+
+
+game:GetService("ReplicatedStorage").Fire.OnServerEvent:Connect(function(plr, xVelocity, yVelocity)
+	local clone = Instance.new("Part")
+	clone.Shape = "Ball"
+	clone.Parent = workspace
+	clone.CFrame = CFrame.new(0, 10, 0)
+	clone:SetNetworkOwner(nil)
+	clone.Name = plr.Name
+
+	ApplyVelocity(clone, DURATION, xVelocity, yVelocity)
+end)
+            </p>
+        <div class="explaination">
+            <p>upon clicking the screen, a ball shoots out in the direction depending on the current mouse position</p>
+            <p>the velocity of the ball between two vector points does not change as a ratio is applied to recalculate speed</p>
+			<p>this is an example of force being applied to the ball for 0.3 seconds (red arrow = force)</p>
+			<img src="images/lua_2.2.png"></img>
+            <br>
+			<br>
+			<br>
+            <p>note: set this up by including a remote event named "Fire"</p>
+            <img src="images/lua_2.1.png"></img>
+        </div>
+        </section>
+
+		<h2 id="lua_text">a few of my creations</h2>
+
+		<h3>"No Way Out"</h3>
+        <section>
+            <img class="thumbnail" src="images/lua_3.1.png"></img>
+			<div class="explaination">
+				<a href="https://www.roblox.com/games/10539704239/No-Way-Out"><p>https://www.roblox.com/games/10539704239/No-Way-Out</p></a>
+				<p>created: 8/9/2022</p>
+				<br>
+				<p>this has been my first ever game</p>
+				<p>a puzzle game where the player has to identify the way out through a series of events</p>
+				<br>
+				<p>hidden levers & passcodes are shown below</p>
+				<img src="images/lua_3.2.png"></img>
+				<img src="images/lua_3.3.png"></img>
+			</div>
+		</section>
+
+		<h3>"Trial of the Ducks"</h3>
+        <section>
+            <img class="thumbnail" src="images/lua_4.1.png"></img>
+			<div class="explaination">
+				<a href="https://www.roblox.com/games/123658248244931/Trial-of-the-Ducks"><p>https://www.roblox.com/games/123658248244931/Trial-of-the-Ducks</p></a>
+				<p>created: 12/27/2024</p>
+				<br>
+				<p>a 7 day solo project (submitted for a gamejam and won #2)</p>
+				<p>a 2.5d duck racing simulator - inspired by <u>duck life</u></p>
+				<p>contains a working saving system, global leaderboard, global chat, and more</p>
+				<br>
+				<p>overview & purchasing:</p>
+				<img src="images/lua_4.2.png"></img>
+				<p>training & racing:</p>
+				<img src="images/lua_4.3.png"></img>
+				<img src="images/lua_4.4.png"></img>
+			</div>
+		</section>
+
+		<h3>"Developing Obscurity"</h3>
+        <section>
+            <img class="thumbnail" src="images/lua_5.1.png"></img>
+			<div class="explaination">
+				<a href="https://www.roblox.com/games/108127708342674/Developing-Obscurity"><p>https://www.roblox.com/games/108127708342674/Developing-Obscurity</p></a>
+				<p>created: 6/6/2025</p>
+				<br>
+				<p>another 7 day solo project</p>
+				<p>a multiplayer 2.5d building/parkour game - inspired by <u>ultimate chicken horse</u></p>
+				<p>this game is built in a style in which the <u>player</u> is altered into the shoes of the <u>developer</u></p>
+				<p>contains a two dimentional building mechanic, round system, saving system, and more</p>
+				<br>
+				<p>building mechanic - some parts have different functionalities than others:</p>
+				<img src="images/lua_5.2.png"></img>
+				<img src="images/lua_5.4.png"></img>
+				<p>descriptions:</p>
+				<img src="images/lua_5.3.png"></img>
+			</div>
+		</section>
+    </div>
+
+
+    
+    <div class="page" id="cpp">
+        <h2 id="cpp_text">c++</h2>
+        <p>definitely my favorite language by far, the speed and precision after compiling the code is both desirable and useful for my macros, programs, etc.</p>
+        <br>
+
+        <h3>autoclicker:</h3>
+        <section>
+            <p class="code">#include &ltiostream&gt
+#include &ltwindows.h&gt
+
+int main() {
+	float delay;
+	bool isPaused = false;
+
+	std::cout << "autoclicker cooldown: (sec) \n";
+	std::cin >> delay;
+	delay *= 1000;
+		
+	while (true) {
+		if (GetAsyncKeyState('Z') & 0x8000) {
+			break;
+		}
+
+		if (GetAsyncKeyState('X') & 0x8000) {
+			isPaused = !isPaused;
+			while (GetAsyncKeyState('X') & 0x8000) {
+				Sleep(10);
+			}
+
+			std::cout << "Paused: " << isPaused << "\n";
+		}
+
+		if (!isPaused) {
+			INPUT inputs[2] = {};
+
+			inputs[0].type = INPUT_MOUSE;
+			inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+			inputs[1].type = INPUT_MOUSE;
+			inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+			SendInput(2, inputs, sizeof(INPUT));
+		}
+
+		Sleep(delay);
+	}
+
+	return 0;
+}</p>   
+        <div class="explaination">
+            <p>this macro is one of my first ever programs; what it does is it simply clicks once for every x amount of seconds.</p>
+            <p>- press the key 'x' to pause, and 'z' to exit.</p>
+			<br>
+			<br>
+			<br>
+			<p>the autoclicker asks for a cooldown, 0.01 is inputted (100 clicks/sec)</p>
+			<img src="images/cpp_1.1.png"></img>
+			<p>'x' is pressed to pause this autoclicker from running</p>
+			<img src="images/cpp_1.2.png"></img>
+			<p>'x' is pressed again to resume this autoclicker</p>
+			<img src="images/cpp_1.3.png"></img>
+        </div>
+
+        </section>
+
+        <h3>get screen coordinates:</h3>
+        <section>
+            <p class="code">#include &ltiostream&gt
+#include &ltwindows.h&gt
+
+int main() {
+	POINT point;
+
+	while (true) {
+		if (GetAsyncKeyState('Z') & 0x8000) {
+			break;
+		}
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			if (GetCursorPos(&point)) {
+				std::cout << point.x << " " << point.y << "\n";
+
+				while (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+					Sleep(25);
+				}
+			}
+		}
+
+		Sleep(25);
+	}
+
+	return 0;
+}
+}</p>
+            <div class="explaination">
+                <p>this is just a simple way to get pixel coordinates on the screen, in which you may use them later. </p>
+                <p>- press 'z' to exit and left click to get the x & y coords</p>
+				<br>
+				<br>
+				<br>
+				<p>an example of the program outputting screen coordinates after left clicking:</p>
+				<img src="images/cpp_2.1.png"></img>
+            </div>
+        </section>
+
+        <h3>tiny task (macro):</h3>
+        <section>
+            <p class="code">#include &ltiostream&gt
+#include &ltvector&gt
+#include &ltchrono&gt
+#include &ltstring&gt
+#include &ltsstream&gt
+#include &ltwindows.h&gt
+
+// Global Data
+const auto CONTROL_KEY = VK_ESCAPE;
+const std::string KEY_NAME = "ESC";
+
+enum class Action {
+	Key,
+	Mouse
+};
+
+struct ActionData {
+	Action type;
+	int key;
+	float time;
+	POINT position;
+};
+
+// Function Prototypes
+float GetTime(std::chrono::steady_clock::time_point& initialTime);
+void RecordMacro(std::vector<ActionData> actions);
+void LoadSource(std::vector<ActionData> &actions);
+void DisplayActions(std::vector<ActionData> actions);
+void ExtractSource(std::vector<ActionData> actions);
+void RunRecording(std::vector<ActionData> actions);
+
+int main() {
+	// Vector Action Data
+	std::vector<ActionData> actions = {};
+
+	std::cout << "- 1 to begin recording  - \n";
+	std::cout << "- 2 to load from source - \n";
+	std::cout << "\n";
+
+	int userOption;
+
+	std::cin >> userOption;
+	while (userOption < 1 && userOption > 2) {
+		std::cout << "- Invalid: ";
+		std::cin >> userOption;
+	}
+
+	std::cout << "\n";
+
+	switch (userOption) {
+	case 1:
+		RecordMacro(actions);
+		break;
+	case 2:
+		LoadSource(actions);
+		break;
+	}
+
+	return 0;
+}
+
+
+
+// Functions
+float GetTime(std::chrono::steady_clock::time_point& initialTime) {
+	auto currentTime = std::chrono::steady_clock::now();
+	auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - initialTime);
+	initialTime = currentTime;
+
+	return static_cast<float>(deltaTime.count());
+}
+
+void RecordMacro(std::vector<ActionData> actions) {
+	using clock = std::chrono::steady_clock;
+
+	// Info
+	std::cout << "Press " << KEY_NAME << " to record your actions: \n";
+
+	while (!(GetAsyncKeyState(CONTROL_KEY) & 0x8000)) {
+		Sleep(10);
+	}
+
+	while (GetAsyncKeyState(CONTROL_KEY) & 0x8000) {               // Makes sure the program starts after releasing the control key
+		Sleep(10);
+	}
+
+	std::cout << "\n";
+	std::cout << "- Recording -\n";
+
+	// Begin - Record
+	auto initialTime = clock::now();
+
+	while (!(GetAsyncKeyState(CONTROL_KEY) & 0x8000)) {
+
+		for (char key = 'A'; key <= 'Z'; key++) {
+			if (GetAsyncKeyState(key) & 0x8000) {
+				float deltaTime = GetTime(initialTime);
+
+				actions.push_back({ Action::Key, key, deltaTime, {0, 0} });
+				std::cout << key << " " << deltaTime << "\n";
+
+				while (GetAsyncKeyState(key) & 0x8000) {
+					Sleep(0.5);
+				}
+
+				break;
+			}
+		}
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+			float deltaTime = GetTime(initialTime);
+			POINT screenPos;
+			GetCursorPos(&screenPos);
+
+			actions.push_back({ Action::Mouse, VK_LBUTTON, deltaTime, screenPos });
+			std::cout << VK_LBUTTON << " " << deltaTime << "\n";
+
+			while (GetAsyncKeyState(VK_LBUTTON) & 0x8000) {
+				Sleep(0.5);
+			}
+		}
+		else if (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+			float deltaTime = GetTime(initialTime);
+			POINT screenPos;
+			GetCursorPos(&screenPos);
+
+			actions.push_back({ Action::Mouse, VK_RBUTTON, deltaTime, screenPos });
+			std::cout << VK_RBUTTON << " " << deltaTime << "\n";
+
+			while (GetAsyncKeyState(VK_RBUTTON) & 0x8000) {
+				Sleep(0.5);
+			}
+		}
+
+		/*************************
+		* Add More Detections Here
+		*************************/
+
+		Sleep(0.1);
+	}
+
+	// Begin - Menu
+	DisplayActions(actions);
+}
+
+void LoadSource(std::vector<ActionData>& actions) {
+	const short ACTION_ELEMENTS = 5;  // the amount of elements in the action vector - ex: {type, key} = 2 elements
+	unsigned short iteration = 1;
+	std::string source;
+	ActionData temporaryData;
+
+	std::cout << "- Paste the source: - \n";
+	std::cin.ignore();
+	std::getline(std::cin, source);
+
+	std::istringstream iss(source);
+
+	for (std::string data; iss >> data;) {
+		if (iteration % 5 == 1) {                          // type
+			if (data == "Key")
+				temporaryData.type = Action::Key;
+			else if (data == "Mouse")
+				temporaryData.type = Action::Mouse;
+		}
+		else if (iteration % ACTION_ELEMENTS == 2)        // key 
+			temporaryData.key = std::stoi(data);          
+		else if (iteration % ACTION_ELEMENTS == 3)        // time
+			temporaryData.time = std::stoi(data);
+		else if (iteration % ACTION_ELEMENTS == 4)        // posX
+			temporaryData.position.x = std::stoi(data);
+		else if (iteration % ACTION_ELEMENTS == 0) {
+			temporaryData.position.y = std::stoi(data);   // posY
+			actions.push_back(temporaryData);             // add the { ... } data to actions vector
+		}
+
+		iteration++;
+	}
+
+	std::cout << "\n";
+
+	DisplayActions(actions);
+}
+
+void DisplayActions(std::vector<ActionData> actions) {
+	std::cout << "\n";
+	std::cout << "- Recording Complete -\n";
+	std::cout << "- 1 to play recording - \n";
+	std::cout << "- 2 to extract source - \n";
+	std::cout << "- 3 to exit the macro - \n";
+	std::cout << "\n";
+
+	int userOption;
+
+	std::cin >> userOption;
+	while (userOption < 1 && userOption > 2) {
+		std::cout << "- Invalid: ";
+		std::cin >> userOption;
+	}
+
+	std::cout << "\n";
+
+	switch (userOption) {
+	case 1:
+		RunRecording(actions);
+		break;
+	case 2:
+		ExtractSource(actions);
+		break;
+	case 3:
+		std::cout << "- Ended -";
+		break;
+	}
+}
+
+void ExtractSource(std::vector<ActionData> actions) {
+	std::cout << "- Source - \n";
+	for (const auto& action : actions) {      // type key time posX posY
+		std::string type;
+
+		if (action.type == Action::Key)
+			type = "Key ";
+		else if (action.type == Action::Mouse)
+			type = "Mouse ";
+
+		std::cout << type << action.key << " " << action.time << " " << action.position.x << " " << action.position.y << " ";
+	}
+
+	std::cout << "\n";
+
+	DisplayActions(actions);
+}
+
+void RunRecording(std::vector<ActionData> actions) {
+	std::cout << "- Playing - \n";
+	// on loop or once
+		// on loop -> esc to return to menu
+		// once -> esc to return, return to selection menu after replaying
+
+	do {
+		for (const auto& action : actions) {
+			Sleep(static_cast<DWORD>(action.time));
+
+			if (action.type == Action::Key) {
+				INPUT inputs[2] = {};
+
+				inputs[0].type = INPUT_KEYBOARD;
+				inputs[0].ki.wVk = action.key;
+
+				inputs[1].type = INPUT_KEYBOARD;
+				inputs[1].ki.wVk = action.key;
+				inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+
+				SendInput(2, inputs, sizeof(INPUT));
+			}
+			else if (action.type == Action::Mouse) {
+				INPUT inputs[2] = {};
+
+				if (action.key == VK_LBUTTON) {
+					inputs[0].type = INPUT_MOUSE;
+					inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+					inputs[1].type = INPUT_MOUSE;
+					inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+				}
+				else if (action.key == VK_RBUTTON) {
+					inputs[0].type = INPUT_MOUSE;
+					inputs[0].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+
+					inputs[1].type = INPUT_MOUSE;
+					inputs[1].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+				}
+
+				SetCursorPos(action.position.x, action.position.y);
+				mouse_event(MOUSEEVENTF_MOVE, 1, 0, 0, 0);
+
+				SendInput(2, inputs, sizeof(INPUT));
+			}
+		}
+	} while (true);
+
+	DisplayActions(actions);
+}
+}</p>
+            <div class="explaination">
+                <p>my most profound and complex program yet: a tiny task clone. </p>
+				<br>
+                <p>- this macro allows you to record your actions and then run them precisely</p>
+                <p>- there is also a saving feature where you can copy the source (perhaps edit it) and</p>
+                <p>paste it in later when you want to run the same action</p>
+                <p>- note: there are still more things that can be added to this program</p>
+				<br>
+				<br>
+				<br>
+				<p>when executing, 2 options will be displayed</p>
+				<img src="images/cpp_3.1.png"></img>
+				<p>here is an example of recording actions:</p>
+				<p>the left side indicates the key while the right side indicates how long it took to initiate that action</p>
+				<img src="images/cpp_3.2.png"></img>
+				<p>when extracting source, you can copy this outputted source</p>
+				<img src="images/cpp_3.3.png"></img>
+				<p>now if you run the program again, you may paste in the source or create your own!</p>
+				<img src="images/cpp_3.4.png"></img>
+            </div>
+        </section>
+    </div>
+
+    <div class="page" id="js">
+        <h2 id="js_text">javascript</h2>
+        <p>honestly, not a bad language for web development; I like how similar the syntax is compared to c++</p>
+        <br>
+                <h3>calculator:</h3>
+        <div section>
+            <div>insert program here</div>
+            <p class="explaination">here is a working calculator with a combination of html, css, and js</p>
+        </section>
+        </div>
+    </div>
+
+    <div class="page" id="misc">
+        <h2 id="misc_text">miscellaneous</h2>
+        <p>this part showcases a mix of everything else, from other languages to artwork/design</p>
+        <br>
+                <h3>artwork:</h3>
+        <div section>
+            <div>insert program here</div>
+            <p class="explaination">text</p>
+        </section>
+        </div>
+    </div>
+    </main>
+
+    <script src="main.js"></script>
+</body>
+</html>
